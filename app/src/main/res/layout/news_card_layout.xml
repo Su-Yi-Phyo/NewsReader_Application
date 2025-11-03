@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="8dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF">
+
+        <!-- News Title (will be set from API) -->
+        <TextView
+            android:id="@+id/txtNewsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:padding="16dp"
+            android:paddingBottom="8dp"
+            android:lineSpacingExtra="2dp"/>
+
+        <!-- News Description (will be set from API) -->
+        <TextView
+            android:id="@+id/txtNewsDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp"
+            android:lineSpacingExtra="2dp"/>
+
+        <!-- News Image (will be loaded from API) -->
+        <ImageView
+            android:id="@+id/imgNews"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="News Image"/>
+
+        <!-- Bottom Action Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <!-- Timestamp (will be set from API) -->
+            <TextView
+                android:id="@+id/txtNewsTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textColor="#999999"/>
+
+            <!-- Like Button -->
+            <ImageView
+                android:id="@+id/btnLike"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/heart"
+                android:contentDescription="Like"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginEnd="16dp"/>
+
+            <!-- Bookmark Button -->
+            <ImageView
+                android:id="@+id/btnBookmark"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/bookmark"
+                android:contentDescription="Bookmark"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginEnd="16dp"/>
+
+            <!-- Read Later Button -->
+            <ImageView
+                android:id="@+id/btnReadLater"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/readlater"
+                android:contentDescription="Read Later"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
