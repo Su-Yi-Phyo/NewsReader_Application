@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5">
@@ -14,67 +15,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        app:cardElevation="10dp"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/dark"
+        app:itemTextColor="@color/nav_item_color"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <!--Bottom Navigator-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:background="#FFFFFF"
-            android:layout_marginTop="10dp">
-
-            <!--Home Button-->
-            <ImageView
-                android:id="@+id/btnHome"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/home"
-                android:contentDescription="Home"
-                android:layout_marginLeft="50dp"
-                android:clickable="true"
-                android:focusable="true"/>
-
-            <!--Trending Button-->
-            <ImageView
-                android:id="@+id/btnTrending"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/trending"
-                android:contentDescription="Trending"
-                android:layout_marginLeft="60dp"
-                android:clickable="true"
-                android:focusable="true"/>
-
-            <!--History Button-->
-            <ImageView
-                android:id="@+id/btnHistory"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/history"
-                android:contentDescription="History"
-                android:layout_marginLeft="60dp"
-                android:clickable="true"
-                android:focusable="true"/>
-
-            <!--User Button-->
-            <ImageView
-                android:id="@+id/btnProfile"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/user"
-                android:contentDescription="User Profile"
-                android:layout_marginLeft="50dp"
-                android:clickable="true"
-                android:focusable="true"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

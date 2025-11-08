@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu khi được chọn -->
+    <item android:color="@color/lightgray" android:state_checked="true" />
+    <!-- Màu mặc định -->
+    <item android:color="@color/white" />
+</selector>

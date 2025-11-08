@@ -12,32 +12,46 @@ import com.example.newsreaderapp.fragments.main.HistoryPageFragment;
 import com.example.newsreaderapp.fragments.main.HomePageFragment;
 import com.example.newsreaderapp.fragments.main.TrendingPageFragment;
 import com.example.newsreaderapp.fragments.main.UserProfilePageFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView btnHome, btnTrending, btnHistory, btnProfile;
+    BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //find buttons first
-        btnHome = findViewById(R.id.btnHome);
-        btnTrending = findViewById(R.id.btnTrending);
-        btnHistory = findViewById(R.id.btnHistory);
-        btnProfile = findViewById(R.id.btnProfile);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
 
-        //Load Homepage when the app starts
-        loadFragment(new HomePageFragment());
+        // Mặc định mở tab "Tin tức"
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new HomePageFragment())
+                .commit();
 
-        //set up click listeners
-        btnHome.setOnClickListener(v -> loadFragment(new HomePageFragment()));
-        btnTrending.setOnClickListener(v -> loadFragment(new TrendingPageFragment()));
-        btnHistory.setOnClickListener(v -> loadFragment(new HistoryPageFragment()));
-        btnProfile.setOnClickListener(v -> loadFragment(new UserProfilePageFragment()));
-    }
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            Fragment selected = null;
 
-    private void loadFragment(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_news) {
+                selected = new HomePageFragment();
+            } else if (itemId == R.id.nav_trending) {
+                selected = new TrendingPageFragment();
+            } else if (itemId == R.id.nav_history) {
+                selected = new HistoryPageFragment();
+            } else if (itemId == R.id.nav_profile) {
+                selected = new UserProfilePageFragment();
+            }
+
+            if (selected != null) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentContainer, selected)
+                        .commit();
+            }
+
+            return true;
+        });
     }
 }
