@@ -27,7 +27,7 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Chưa đăng nhập"
+        android:text="Haven't login yet"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -39,7 +39,7 @@
         android:id="@+id/tvMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bạn cần đăng nhập để lưu tin."
+        android:text="You have to log in to save news."
         android:textSize="16sp"
         android:gravity="center"
         android:layout_marginBottom="20dp"/>
@@ -52,14 +52,14 @@
 
         <Button
             android:id="@+id/btnCancel"
-            android:text="Hủy"
+            android:text="Cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black"/>
 
         <Button
             android:id="@+id/btnConfirm"
-            android:text="Xác nhận"
+            android:text="Login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"

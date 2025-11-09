@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,9 +13,17 @@ import androidx.fragment.app.Fragment;
 import com.example.newsreaderapp.R;
 
 public class HomePageFragment extends Fragment {
+
+    //variable declarations
+    private ImageView btnBrowse;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.home_page_layout, container, false);
+        View view = inflater.inflate(R.layout.home_page_layout, container, false);
+        return view;
     }
+
+
 }
