@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.newsreaderapp.R;
 import com.example.newsreaderapp.activities.LoginActivity;
 import com.example.newsreaderapp.viewmodel.UserViewModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class UserProfilePageFragment extends Fragment {
     private UserViewModel viewModel;
@@ -65,13 +66,22 @@ public class UserProfilePageFragment extends Fragment {
             requireActivity().finish();
         });
 
-        // Delete Account
         btnDeleteAccount.setOnClickListener(v -> {
-            viewModel.deleteAccount();
-            prefs.edit().remove("user_id").apply();
-            Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(requireActivity(), LoginActivity.class));
-            requireActivity().finish();
+            new MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Confirm Delete")
+                    .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        viewModel.deleteAccount();
+                        prefs.edit().remove("user_id").apply();
+
+                        Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
+
+                        // Quay lại màn đăng nhập
+                        startActivity(new Intent(requireActivity(), LoginActivity.class));
+                        requireActivity().finish();
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
 
         // Observe errorMessage
