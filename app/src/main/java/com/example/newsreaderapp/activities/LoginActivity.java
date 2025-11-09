@@ -3,6 +3,7 @@ package com.example.newsreaderapp.activities;
 import static android.view.View.VISIBLE;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
@@ -18,16 +19,25 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.newsreaderapp.R;
+import com.example.newsreaderapp.database.UserEntity;
+import com.example.newsreaderapp.repository.UserRepository;
 import com.example.newsreaderapp.viewmodel.UserViewModel;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final int RC_SIGN_IN = 101;
     private UserViewModel viewModel;
     private EditText edtEmail, edtPassword;
     private TextView tvTitle;
     private Button btnContinue, btnGoogle;
-
+    private GoogleSignInClient mGoogleSignInClient;
     public boolean isAccount = false;
 
     @Override
@@ -55,12 +65,15 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
-        viewModel.currentUser.observe(this, user -> {
+        viewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
-                Toast.makeText(this, "Đăng nhập thành công: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                // Lưu userId vào SharedPreferences
+                SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                prefs.edit().putInt("user_id", user.getId()).apply();
+
                 // Chuyển sang MainActivity
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
             }
         });
 
@@ -91,17 +104,20 @@ public class LoginActivity extends AppCompatActivity {
             // Giả sử kiểm tra xem tài khoản có tồn tại
             viewModel.checkUserExists(email);
 
-            viewModel.getCurrentUser().observe(this, user -> {
-                if (user != null) {
-                    // Đổi tiêu đề
+            viewModel.getIsUserExists().observe(this, exists -> {
+                if (exists != null && exists) {
                     tvTitle.setText("You already have an account.\nPlease login");
                     btnContinue.setText("Login");
                     edtPassword.setHint("Enter your password");
                     isAccount = true;
-                }else{
+                } else {
+                    tvTitle.setText("Create your account");
+                    btnContinue.setText("Register");
+                    edtPassword.setHint("Create your password");
                     isAccount = false;
                 }
             });
+
             // nhấn nút lần 2
             btnContinue.setOnClickListener(v2 -> {
                 String password2 = edtPassword.getText().toString().trim();
@@ -113,21 +129,18 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (isAccount) {
                     viewModel.login(email, password2);
-                    return;
-                }
-                // Chưa có tài khoản
-                if (!isAccount && isValidPassword(password2)){
+                } else if (isValidPassword(password2)){
                     viewModel.register(email, password2);
                     Toast.makeText(this, "Account created successfully!!", Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
-        // Xử lý nút "Đăng nhập bằng Google"
-        btnGoogle.setOnClickListener(v -> {
-            // TODO: gọi Google Sign-In API
-            Toast.makeText(this, "Google login chưa được cài đặt", Toast.LENGTH_SHORT).show();
-        });
+        btnGoogle.setOnClickListener(v ->
+                Toast.makeText(this, "No support", Toast.LENGTH_SHORT).show()
+        );
+
+
     }
     // Check input
     private boolean isValidEmail(String email) {
@@ -146,6 +159,5 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
-
 
 }

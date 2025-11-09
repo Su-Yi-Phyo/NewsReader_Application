@@ -43,14 +43,13 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Số điện thoại -->
         <TextView
-            android:id="@+id/tvPhone"
+            android:id="@+id/tvEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
-            android:text="+88001712346789"
+            android:text="hieuan@gmail.com"
             android:textColor="@color/white"
             android:textSize="14sp" />
     </RelativeLayout>

@@ -27,9 +27,9 @@ public class UserRepository {
         });
     }
 
-    public void login(String username, String password, LoginCallback callback) {
+    public void login(String email, String password, LoginCallback callback) {
         executorService.execute(() -> {
-            UserEntity user = userDao.login(username, password);
+            UserEntity user = userDao.login(email, password);
             if (user != null) {
                 callback.onSuccess(user);
             } else {
@@ -43,6 +43,17 @@ public class UserRepository {
         void onSuccess();
         void onError(String message);
     }
+    public void registerGoogleUser(UserEntity user, Callback callback) {
+        executorService.execute(() -> {
+            try {
+                userDao.insertUser(user);  // lưu user mới vào Room
+                callback.onSuccess();
+            } catch (Exception e) {
+                callback.onError(e.getMessage());
+            }
+        });
+    }
+
 
     public interface LoginCallback {
         void onSuccess(UserEntity user);
@@ -63,6 +74,31 @@ public class UserRepository {
     public interface UserExistCallback {
         void onExist(UserEntity user);
         void onNotExist();
+    }
+    public void getUserById(int userId, LoadUserCallback callback) {
+        executorService.execute(() -> {
+            UserEntity user = userDao.getUserById(userId); // cần tạo query trong DAO
+            if (user != null) {
+                callback.onSuccess(user);
+            } else {
+                callback.onError("User không tồn tại");
+            }
+        });
+    }
+    public void deleteAccount(UserEntity user, Callback callback) {
+        executorService.execute(() -> {
+            try {
+                userDao.deleteUser(user);
+                callback.onSuccess();
+            } catch (Exception e) {
+                callback.onError(e.getMessage());
+            }
+        });
+    }
+
+    public interface LoadUserCallback {
+        void onSuccess(UserEntity user);
+        void onError(String message);
     }
 
 
