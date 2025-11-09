@@ -13,4 +13,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
     UserEntity login(String username, String password);
+    // Kiểm tra user đã tồn tại theo email/username
+    @Query("SELECT * FROM users WHERE username = :email LIMIT 1")
+    UserEntity getUserByEmail(String email);
 }

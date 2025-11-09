@@ -2,6 +2,7 @@ package com.example.newsreaderapp.activities;
 
 import static android.view.View.VISIBLE;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
@@ -14,18 +15,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.newsreaderapp.R;
+import com.example.newsreaderapp.viewmodel.UserViewModel;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity {
-
+    private UserViewModel viewModel;
     private EditText edtEmail, edtPassword;
     private TextView tvTitle;
     private Button btnContinue, btnGoogle;
 
-    public boolean isAccount = true;
+    public boolean isAccount = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,23 @@ public class LoginActivity extends AppCompatActivity {
 
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
+        viewModel = new ViewModelProvider(this).get(UserViewModel.class);
+
+        viewModel.currentUser.observe(this, user -> {
+            if (user != null) {
+                Toast.makeText(this, "Đăng nhập thành công: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                // Chuyển sang MainActivity
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        viewModel.errorMessage.observe(this, msg -> {
+            if (msg != null) {
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // Xử lý nút "Tiếp tục"
         btnContinue.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
@@ -69,13 +89,19 @@ public class LoginActivity extends AppCompatActivity {
             edtPassword.requestFocus();
 
             // Giả sử kiểm tra xem tài khoản có tồn tại
-            if (isAccount) {
-                // Đổi tiêu đề
-                tvTitle.setText("You already have an account.\nPlease login");
-                btnContinue.setText("Login");
-                edtPassword.setHint("Enter your password");
-            }
+            viewModel.checkUserExists(email);
 
+            viewModel.getCurrentUser().observe(this, user -> {
+                if (user != null) {
+                    // Đổi tiêu đề
+                    tvTitle.setText("You already have an account.\nPlease login");
+                    btnContinue.setText("Login");
+                    edtPassword.setHint("Enter your password");
+                    isAccount = true;
+                }else{
+                    isAccount = false;
+                }
+            });
             // nhấn nút lần 2
             btnContinue.setOnClickListener(v2 -> {
                 String password2 = edtPassword.getText().toString().trim();
@@ -85,12 +111,13 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (isPassword(password2) && isAccount) {
-                    Toast.makeText(this, "Login successfully!!", Toast.LENGTH_SHORT).show();
+                if (isAccount) {
+                    viewModel.login(email, password2);
                     return;
                 }
                 // Chưa có tài khoản
                 if (!isAccount && isValidPassword(password2)){
+                    viewModel.register(email, password2);
                     Toast.makeText(this, "Account created successfully!!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -120,15 +147,5 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    // Check password
-    private boolean isPassword(String password) {
-        // Ít nhất 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt
-        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
-        if (!password.matches(passwordPattern)) {
-            edtPassword.setError("Wrong password");
-            return false;
-        }
-        return true;
-    }
 
 }

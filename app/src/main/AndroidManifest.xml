@@ -24,10 +24,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity-->
-<!--            android:name=".activities.LoginActivity"-->
-<!--            android:exported="false">-->
-<!--        </activity>-->
+        <activity
+            android:name=".activities.MainActivity"
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>
