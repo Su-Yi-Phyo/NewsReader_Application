@@ -19,19 +19,20 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="#FFFFFF"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="end|center_vertical"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
 
-            <!--Browse Button-->
-            <ImageView
-                android:id="@+id/btnBrowse"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/browse"
-                android:contentDescription="Browse"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="15dp"
-                android:clickable="true"
-                android:focusable="true"/>
+            <!--Title-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="NewsReader App"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold"/>
 
             <!--Search Button-->
             <ImageView
@@ -40,10 +41,10 @@
                 android:layout_height="25dp"
                 android:src="@drawable/search"
                 android:contentDescription="Search"
-                android:layout_marginLeft="250dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginEnd="16dp"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
 
             <!--Notification Button-->
             <ImageView
@@ -52,23 +53,87 @@
                 android:layout_height="25dp"
                 android:src="@drawable/notification"
                 android:contentDescription="Notification"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="15dp"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <!-- Scrollable Tab Layout -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/HomeTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        app:tabMode="scrollable"
+        app:tabGravity="start"
+        app:tabIndicatorColor="#FF5252"
+        app:tabSelectedTextColor="#000000"
+        app:tabTextColor="#808080"
+        app:tabIndicatorHeight="3dp"
+        app:tabMinWidth="80dp"
+        app:tabPaddingStart="12dp"
+        app:tabPaddingEnd="12dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Business"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Technology"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sports"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gaming"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lifestyle"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Food"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Relationship"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Travel"/>
+    </com.google.android.material.tabs.TabLayout>
 
     <!--News Display-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewNewsList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="20dp"
+        android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/topBar"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/HomeTabLayout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
