@@ -17,7 +17,8 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     void insertUser(UserEntity user);
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertOrUpdate(UserEntity user);
     @Query("UPDATE users SET savedArticles = :saved WHERE id = :id")
     void updateSavedArticles(String id, List<Article> saved);
     @Query("SELECT * FROM users WHERE email = :email AND password = :password LIMIT 1")
@@ -26,10 +27,7 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     UserEntity getUserByEmail(String email);
     @Query("SELECT * FROM users WHERE id = :userId LIMIT 1")
-    LiveData<UserEntity> getUserById(String userId);
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertOrUpdate(UserEntity user);
-
+    UserEntity getUserById(String userId);
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     LiveData<UserEntity> getUserLiveData(String id);
     @Query("DELETE FROM users WHERE id = :id")

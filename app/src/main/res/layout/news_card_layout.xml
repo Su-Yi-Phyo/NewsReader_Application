@@ -89,10 +89,11 @@
 
             <!-- Read Later Button -->
             <ImageView
-                android:id="@+id/btnReadLater"
+                android:id="@+id/btnDelete"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/readlater"
+                android:src="@drawable/close"
+                android:visibility="gone"
                 android:contentDescription="Read Later"
                 android:clickable="true"
                 android:focusable="true" />

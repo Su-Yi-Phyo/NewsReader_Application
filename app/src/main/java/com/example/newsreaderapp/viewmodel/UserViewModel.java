@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.newsreaderapp.database.AppDatabase;
 import com.example.newsreaderapp.database.UserEntity;
 import com.example.newsreaderapp.models.Article;
@@ -30,10 +33,23 @@ public class UserViewModel extends AndroidViewModel {
     private MutableLiveData<UserEntity> currentUser = new MutableLiveData<>();
 
     public MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private LiveData<UserEntity> userLiveData;
 
+    public LiveData<UserEntity> getUser() {
+        return userLiveData;
+    }
     public UserViewModel(@NonNull Application app) {
         super(app);
-        repo = new UserRepository(AppDatabase.getInstance(app).userDao(), FirebaseFirestore.getInstance());
+        repo = new UserRepository(
+                AppDatabase.getInstance(app).userDao(),
+                FirebaseFirestore.getInstance()
+        );
+    }
+
+    public UserViewModel(@NonNull Application app, UserRepository repo, String userId) {
+        super(app);
+        this.repo = repo;
+        this.userLiveData = repo.getUser(userId);
     }
     public LiveData<UserEntity> getUserById(String id) {
         return repo.getUserById(id);
@@ -144,4 +160,26 @@ public class UserViewModel extends AndroidViewModel {
     public void unlikeArticle(String userId, Article article) { repo.unlikeArticle(userId, article); }
     public void saveArticle(String userId, Article article) { repo.saveArticle(userId, article); }
     public void unsaveArticle(String userId, Article article) { repo.unsaveArticle(userId, article); }
+
+    public static class Factory implements ViewModelProvider.Factory {
+        private final UserRepository repository;
+        private final String userId;
+        private final Application app;
+
+        public Factory(Application app, UserRepository repository, String userId) {
+            this.app = app;
+            this.repository = repository;
+            this.userId = userId;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            if (modelClass.isAssignableFrom(UserViewModel.class)) {
+                return (T) new UserViewModel(app, repository, userId);
+            }
+            throw new IllegalArgumentException("Unknown ViewModel class");
+        }
+    }
+
 }

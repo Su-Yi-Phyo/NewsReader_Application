@@ -14,9 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.newsreaderapp.R;
-import com.example.newsreaderapp.fragments.main.HistoryPageFragment;
+import com.example.newsreaderapp.fragments.main.BookmarksFragment;
+
 import com.example.newsreaderapp.fragments.main.HomePageFragment;
-import com.example.newsreaderapp.fragments.main.TrendingPageFragment;
+import com.example.newsreaderapp.fragments.main.LikedNewsFragment;
+
 import com.example.newsreaderapp.fragments.main.UserProfilePageFragment;
 import com.example.newsreaderapp.viewmodel.UserViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -80,10 +82,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (itemId == R.id.nav_news) {
                 selected = new HomePageFragment();
-            } else if (itemId == R.id.nav_trending) {
-                selected = new TrendingPageFragment();
-            } else if (itemId == R.id.nav_history) {
-                selected = new HistoryPageFragment();
+            } else if (itemId == R.id.nav_favourite) {
+                selected = new LikedNewsFragment();
+            } else if (itemId == R.id.nav_bookmarks) {
+                selected = new BookmarksFragment();
             } else if (itemId == R.id.nav_profile) {
                 selected = new UserProfilePageFragment();
             }
