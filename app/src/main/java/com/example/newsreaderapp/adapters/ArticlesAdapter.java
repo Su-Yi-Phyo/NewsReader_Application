@@ -1,5 +1,6 @@
 package com.example.newsreaderapp.adapters;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,17 @@ import com.example.newsreaderapp.R;
 import com.example.newsreaderapp.models.Article;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsViewHolder> {
 
     private final List<Article> items = new ArrayList<>();
     private OnArticleActionListener listener;
+    private final Set<String> likedUrls = new HashSet<>();
+    private final Set<String> savedUrls = new HashSet<>();
+
 
     // 🔹 Loại adapter (HOME, BOOKMARKS, LIKED)
     public enum Mode { HOME, BOOKMARKS, LIKED }
@@ -100,13 +106,29 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
                 break;
         }
 
-        // HOME mode — thêm hành động like/save
         if (mode == Mode.HOME) {
+            // Cập nhật màu nút theo trạng thái
+            if (savedUrls.contains(a.getUrl())) {
+                h.btnSave.setColorFilter(Color.parseColor("#FF9800")); // ví dụ cam cho saved
+            } else {
+                h.btnSave.setColorFilter(Color.parseColor("#AAAAAA")); // mặc định xám
+            }
+
+            if (likedUrls.contains(a.getUrl())) {
+                h.btnLike.setColorFilter(Color.parseColor("#F44336")); // đỏ cho liked
+            } else {
+                h.btnLike.setColorFilter(Color.parseColor("#AAAAAA"));
+            }
+
             h.btnSave.setOnClickListener(v -> {
                 if (listener != null) listener.onSaveClick(a);
+                savedUrls.add(a.getUrl()); // cập nhật local
+                notifyItemChanged(position);
             });
             h.btnLike.setOnClickListener(v -> {
                 if (listener != null) listener.onLikeClick(a);
+                likedUrls.add(a.getUrl());
+                notifyItemChanged(position);
             });
         }
     }
@@ -131,4 +153,24 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
             btnSave  = itemView.findViewById(R.id.btnBookmark);
         }
     }
+    public void setLikedArticles(List<Article> likedArticles) {
+        likedUrls.clear();
+        if (likedArticles != null) {
+            for (Article a : likedArticles) {
+                if (a.getUrl() != null) likedUrls.add(a.getUrl());
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void setSavedArticles(List<Article> savedArticles) {
+        savedUrls.clear();
+        if (savedArticles != null) {
+            for (Article a : savedArticles) {
+                if (a.getUrl() != null) savedUrls.add(a.getUrl());
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 }

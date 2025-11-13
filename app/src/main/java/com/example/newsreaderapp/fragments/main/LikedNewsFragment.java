@@ -126,7 +126,7 @@ public class LikedNewsFragment extends Fragment {
             @Override
             public void onRemoveClick(Article a) {
                 userViewModel.unlikeArticle(userId, a);
-                Toast.makeText(getContext(), "Unliked all", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Unliked", Toast.LENGTH_SHORT).show();
             }
         });
         return view;

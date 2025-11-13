@@ -37,4 +37,18 @@ public class Article {
     public String getUrlToImage() { return urlToImage; }
     public String getPublishedAt() { return publishedAt; }
     public String getContent() { return content; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Article)) return false;
+        Article a = (Article) o;
+        return url != null && url.equals(a.getUrl()); // so sánh bằng URL duy nhất
+    }
+
+    @Override
+    public int hashCode() {
+        return url != null ? url.hashCode() : 0;
+    }
+
 }

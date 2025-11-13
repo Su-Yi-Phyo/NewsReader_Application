@@ -119,7 +119,7 @@ public class BookmarksFragment extends Fragment {
             @Override
             public void onRemoveClick(Article a) {
                 userViewModel.unsaveArticle(userId, a);
-                Toast.makeText(getContext(), "Đã xoá bài", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Unsaved", Toast.LENGTH_SHORT).show();
             }
         });
     }
