@@ -16,6 +16,7 @@ public class RetrofitClient {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
+            //custom HTTP client that Retrofit will use for all requests
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
                     .connectTimeout(30, TimeUnit.SECONDS)

@@ -11,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
 import com.example.newsreaderapp.R;
 import com.example.newsreaderapp.models.Article;
@@ -19,8 +18,7 @@ import com.example.newsreaderapp.models.Article;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-    //variable declaration
+public class TrendingNewsAdapter extends RecyclerView.Adapter<TrendingNewsAdapter.VH> {
 
     private final List<Article> items = new ArrayList<>();
 
@@ -30,29 +28,35 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         notifyDataSetChanged();
     }
 
+    public void appendItems(List<Article> more) {
+        if (more == null || more.isEmpty()) return;
+        int start = items.size();
+        items.addAll(more);
+        notifyItemRangeInserted(start, more.size());
+    }
+
     @NonNull
     @Override
-    public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_card_layout, parent, false);
-        return new NewsViewHolder(v);
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.trending_news_card, parent, false);
+        return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsViewHolder h, int position) {
+    public void onBindViewHolder(@NonNull VH h, int position) {
         Article a = items.get(position);
 
-        h.txtTitle.setText(a.getTitle() != null ? a.getTitle() : "");
-        h.txtDesc.setText(a.getDescription() != null ? a.getDescription() : "");
-        h.txtTime.setText(a.getPublishedAt() != null ? a.getPublishedAt() : "");
+        h.title.setText(a.getTitle() != null ? a.getTitle() : "");
+        h.desc.setText(a.getDescription() != null ? a.getDescription() : "");
+        h.time.setText(a.getPublishedAt() != null ? a.getPublishedAt() : "");
 
         String imgUrl = a.getUrlToImage();
         if (imgUrl != null && !imgUrl.isEmpty()) {
-            h.img.setVisibility(View.VISIBLE);
-            Glide.with(h.itemView.getContext())
-                    .load(imgUrl)
-                    .into(h.img);
+            h.image.setVisibility(View.VISIBLE);
+            Glide.with(h.itemView.getContext()).load(imgUrl).into(h.image);
         } else {
-            h.img.setVisibility(View.GONE);
+            h.image.setVisibility(View.GONE);
         }
 
         h.itemView.setOnClickListener(v -> {
@@ -63,7 +67,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             it.putExtra("content", a.getContent());
             it.putExtra("imageUrl", a.getUrlToImage());
             it.putExtra("publishedAt", a.getPublishedAt());
-            it.putExtra("url", a.getUrl());
             ctx.startActivity(it);
         });
     }
@@ -73,24 +76,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return items.size();
     }
 
-    static class NewsViewHolder extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtDesc, txtTime;
-        ImageView img;
+    static class VH extends RecyclerView.ViewHolder {
+        ImageView image;
+        TextView title, desc, time;
 
-        NewsViewHolder(@NonNull View itemView) {
+        VH(@NonNull View itemView) {
             super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtNewsTitle);
-            txtDesc  = itemView.findViewById(R.id.txtNewsDescription);
-            txtTime  = itemView.findViewById(R.id.txtNewsTime);
-            img      = itemView.findViewById(R.id.imgNews);
+            image = itemView.findViewById(R.id.imgTrendingNews);
+            title = itemView.findViewById(R.id.txtTrendingNewsTitle);
+            desc  = itemView.findViewById(R.id.txtTrendingNewsDescription);
+            time  = itemView.findViewById(R.id.txtTrendingNewsTime);
         }
     }
-
-    public void appendItems(List<Article> more) {
-        if (more == null || more.isEmpty()) return;
-        int start = items.size();
-        items.addAll(more);
-        notifyItemRangeInserted(start, more.size());
-    }
-
 }

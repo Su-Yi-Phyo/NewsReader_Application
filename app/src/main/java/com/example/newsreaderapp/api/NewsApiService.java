@@ -10,21 +10,21 @@ public interface NewsApiService {
 
     String BASE_URL = "https://newsapi.org/v2/";
 
-    // Top headlines with optional category (e.g., "business", "technology", ...)
+    // Top headlines with optional category
     @GET("top-headlines")
     Call<NewsResponse> getTopHeadlines(
-            @Query("country") String country,       // e.g., "us"
-            @Query("category") String category,     // e.g., "business" or null for all
-            @Query("page") Integer page,            // page number (optional)
-            @Query("pageSize") Integer pageSize,    // items per page (optional)
-            @Query("apiKey") String apiKey          // your API key
+            @Query("country") String country,
+            @Query("category") String category,
+            @Query("page") Integer page,
+            @Query("pageSize") Integer pageSize,
+            @Query("apiKey") String apiKey
     );
 
-    // Everything endpoint (optional, for search later if needed)
+    // Everything endpoint
     @GET("everything")
     Call<NewsResponse> searchEverything(
             @Query("q") String query,
-            @Query("sortBy") String sortBy,         // "publishedAt", "relevancy", "popularity"
+            @Query("sortBy") String sortBy,
             @Query("page") Integer page,
             @Query("pageSize") Integer pageSize,
             @Query("apiKey") String apiKey
