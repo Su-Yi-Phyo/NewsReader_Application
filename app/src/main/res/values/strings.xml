@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NewsReaderApp</string>
+    <string name="default_web_client_id">788963978715-ts8pg89i5p32bjk1lf3lf7aq1p5fvk6r.apps.googleusercontent.com</string>
 </resources>

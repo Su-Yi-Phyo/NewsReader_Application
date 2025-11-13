@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "788963978715",
+    "project_id": "newsreaderapp-ae621",
+    "storage_bucket": "newsreaderapp-ae621.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788963978715:android:284394c7863b91e7c84bfe",
+        "android_client_info": {
+          "package_name": "com.example.newsreaderapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "788963978715-193o183k0sj3ub4irti6j5mnokvp5cau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.newsreaderapp",
+            "certificate_hash": "86e7e3058a3ecc6c3ae7011c2da906571371aca1"
+          }
+        },
+        {
+          "client_id": "788963978715-ts8pg89i5p32bjk1lf3lf7aq1p5fvk6r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrCPISyuqQSOBXtlJy6DuwojjGStFNw2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "788963978715-ts8pg89i5p32bjk1lf3lf7aq1p5fvk6r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

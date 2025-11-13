@@ -1,105 +1,138 @@
 package com.example.newsreaderapp.repository;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.newsreaderapp.database.AppDatabase;
 import com.example.newsreaderapp.database.UserDao;
 import com.example.newsreaderapp.database.UserEntity;
+import com.example.newsreaderapp.models.Article;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+
+
 public class UserRepository {
+    private final UserDao userDao; // Room DAO
+    private final ExecutorService executor;
+    private final FirebaseFirestore firestore;
+    private final MutableLiveData<UserEntity> currentUser = new MutableLiveData<>();
 
-    private final UserDao userDao;
-    private final ExecutorService executorService;
+    public UserRepository(UserDao userDao, FirebaseFirestore firestore) {
+        this.userDao = userDao;
+        this.firestore = firestore;
+        this.executor = AppDatabase.databaseWriteExecutor;
+    }
+    public LiveData<UserEntity> getUserById(String id) {
+        return userDao.getUserById(id);
+    }
+    public UserEntity getUserByEmail(String email) {
+        return userDao.getUserByEmail(email);
+    }
+    public LiveData<UserEntity> getCurrentUser() {
+        return currentUser;  // Trả về LiveData để UI observe
+    }
+    // LiveData user để Activity/ViewModel observe
+    public LiveData<UserEntity> getUser(String userId) {
+        // Fetch dữ liệu từ Room ban đầu
+        LiveData<UserEntity> liveData = userDao.getUserLiveData(userId);
 
-    public UserRepository(AppDatabase db) {
-        this.userDao = db.userDao();
-        this.executorService = AppDatabase.databaseWriteExecutor;
+        // Đồng bộ Firestore khi online
+        firestore.collection("users").document(userId).get()
+                .addOnSuccessListener(doc -> {
+                    UserEntity user = doc.toObject(UserEntity.class);
+                    if (user != null) {
+                        new Thread(() -> userDao.insertOrUpdate(user)).start();
+                    }
+                });
+
+        return liveData;
+    }
+    // Lưu user (register hoặc cập nhật profile)
+        public void saveUser(UserEntity user) {
+            new Thread(() -> userDao.insertOrUpdate(user)).start();
+            firestore.collection("users").document(user.getId()).set(user);
+        }
+
+
+    public void fetchUserFromFirestore(String userId) {
+        firestore.collection("users").document(userId).get()
+                .addOnSuccessListener(doc -> {
+                    UserEntity user = doc.toObject(UserEntity.class);
+                    if (user != null) {
+                        new Thread(() -> userDao.insertOrUpdate(user)).start();
+                        currentUser.postValue(user);
+                    }
+                });
     }
 
-    public void register(UserEntity user, Callback callback) {
-        executorService.execute(() -> {
-            try {
-                userDao.insertUser(user);
-                callback.onSuccess();
-            } catch (Exception e) {
-                callback.onError(e.getMessage());
-            }
-        });
-    }
-
-    public void login(String email, String password, LoginCallback callback) {
-        executorService.execute(() -> {
-            UserEntity user = userDao.login(email, password);
+    // Save bài offline + Firestore để multi-device
+    public void saveArticle(String userId, Article article) {
+        // Room
+        new Thread(() -> {
+            UserEntity user = userDao.getUserLiveData(userId).getValue();
             if (user != null) {
-                callback.onSuccess(user);
-            } else {
-                callback.onError("Wrong password");
+                List<Article> saved = new ArrayList<>(user.getSavedArticles());
+                if (!saved.contains(article)) saved.add(article);
+                user.setSavedArticles(saved);
+                userDao.insertOrUpdate(user);
             }
-        });
+        }).start();
+
+        // Firestore
+        firestore.collection("users").document(userId)
+                .update("savedArticles", FieldValue.arrayUnion(article));
     }
 
-    // Callback interfaces
+    public void unsaveArticle(String userId, Article article) {
+        new Thread(() -> {
+            UserEntity user = userDao.getUserLiveData(userId).getValue();
+            if (user != null) {
+                List<Article> saved = new ArrayList<>(user.getSavedArticles());
+                saved.remove(article);
+                user.setSavedArticles(saved);
+                userDao.insertOrUpdate(user);
+            }
+        }).start();
+
+        firestore.collection("users").document(userId)
+                .update("savedArticles", FieldValue.arrayRemove(article));
+    }
+
+    // Like bài (online only)
+    public void likeArticle(String userId, Article article) {
+        firestore.collection("users").document(userId)
+                .update("likedArticles", FieldValue.arrayUnion(article));
+    }
+
+    public void unlikeArticle(String userId, Article article) {
+        firestore.collection("users").document(userId)
+                .update("likedArticles", FieldValue.arrayRemove(article));
+    }
+
+    // Lấy danh sách liked bài (online)
+    public void fetchLikedArticles(String userId, OnCompleteListener<List<Article>> listener) {
+        firestore.collection("users").document(userId).get()
+                .addOnSuccessListener(doc -> {
+                    List<Article> liked = (List<Article>) doc.get("likedArticles");
+                    listener.onComplete(liked != null ? liked : new ArrayList<>());
+                });
+    }
+
+    public interface OnCompleteListener<T> {
+        void onComplete(T data);
+    }
+    public void deleteUserById(String id) {
+        executor.execute(() -> userDao.deleteUserById(id));
+    }
+
     public interface Callback {
         void onSuccess();
         void onError(String message);
     }
-    public void registerGoogleUser(UserEntity user, Callback callback) {
-        executorService.execute(() -> {
-            try {
-                userDao.insertUser(user);  // lưu user mới vào Room
-                callback.onSuccess();
-            } catch (Exception e) {
-                callback.onError(e.getMessage());
-            }
-        });
-    }
-
-
-    public interface LoginCallback {
-        void onSuccess(UserEntity user);
-        void onError(String message);
-    }
-    public void checkUserExists(String email, UserExistCallback callback) {
-        executorService.execute(() -> {
-            UserEntity user = userDao.getUserByEmail(email);
-            if (user != null) {
-                callback.onExist(user);   // User đã tồn tại
-            } else {
-                callback.onNotExist();    // User chưa tồn tại
-            }
-        });
-    }
-
-    // Callback interface
-    public interface UserExistCallback {
-        void onExist(UserEntity user);
-        void onNotExist();
-    }
-    public void getUserById(int userId, LoadUserCallback callback) {
-        executorService.execute(() -> {
-            UserEntity user = userDao.getUserById(userId); // cần tạo query trong DAO
-            if (user != null) {
-                callback.onSuccess(user);
-            } else {
-                callback.onError("User không tồn tại");
-            }
-        });
-    }
-    public void deleteAccount(UserEntity user, Callback callback) {
-        executorService.execute(() -> {
-            try {
-                userDao.deleteUser(user);
-                callback.onSuccess();
-            } catch (Exception e) {
-                callback.onError(e.getMessage());
-            }
-        });
-    }
-
-    public interface LoadUserCallback {
-        void onSuccess(UserEntity user);
-        void onError(String message);
-    }
-
-
 }
