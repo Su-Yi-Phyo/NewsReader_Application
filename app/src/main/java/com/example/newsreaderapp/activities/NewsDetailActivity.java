@@ -1,20 +1,17 @@
 package com.example.newsreaderapp.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.text.HtmlCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.bumptech.glide.Glide;
 import com.example.newsreaderapp.R;
@@ -24,7 +21,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 public class NewsDetailActivity extends AppCompatActivity {
+
+    private static final String TAG = "NewsDetailActivity";
 
     private ImageView btnBack, imgDetailNews;
     private TextView txtDetailTitle, txtDetailContent, txtUploadTime, txtDetailLikeCount;
@@ -38,11 +42,15 @@ public class NewsDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_detail_layout);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        View mainView = findViewById(R.id.main);
+        if (mainView != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                return insets;
+            });
+        }
 
         btnBack = findViewById(R.id.btnBack);
         imgDetailNews = findViewById(R.id.imgDetailNews);
@@ -60,6 +68,8 @@ public class NewsDetailActivity extends AppCompatActivity {
         String publishedAt = getIntent().getStringExtra("publishedAt");
         String url         = getIntent().getStringExtra("url");
 
+        Log.d(TAG, "Article URL: " + url);
+
         String preferred = !isEmpty(content) ? content : (!isEmpty(description) ? description : "");
         boolean truncated = containsTruncation(preferred);
         String body = stripTruncation(preferred);
@@ -76,67 +86,102 @@ public class NewsDetailActivity extends AppCompatActivity {
             imgDetailNews.setVisibility(View.GONE);
         }
 
-        // If truncated and we have a URL, fetch full readable HTML in background and render it inside the app.
+        // If truncated and we have a URL, fetch full readable content
         if (truncated && !isEmpty(url)) {
+            Log.d(TAG, "Content is truncated, loading full article...");
             loadReaderMode(url);
+        } else {
+            Log.d(TAG, "Content not truncated or no URL, showing preview");
         }
 
         btnBack.setOnClickListener(v -> finish());
     }
 
     private void loadReaderMode(String url) {
-        // hide current scroll content; we'll show a WebView with cleaned article HTML
-        scrollableContent.setVisibility(View.GONE);
+        scrollableContent.setVisibility(View.VISIBLE);
+        txtDetailContent.setText("Loading full article…");
 
-        View rootView = (View) topActionBar.getParent();
-        if (!(rootView instanceof ConstraintLayout)) return;
-        ConstraintLayout root = (ConstraintLayout) rootView;
-
-        WebView webView = new WebView(this);
-        webView.setId(View.generateViewId());
-        webView.getSettings().setJavaScriptEnabled(false); // not needed for static HTML
-        webView.setWebViewClient(new WebViewClient());     // keep navigation inside
-
-        ConstraintLayout.LayoutParams lp =
-                new ConstraintLayout.LayoutParams(
-                        ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                        ConstraintLayout.LayoutParams.MATCH_CONSTRAINT);
-        lp.topToBottom = R.id.topActionBar;
-        lp.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
-        lp.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-        lp.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-        root.addView(webView, lp);
-
-        // Background fetch of cleaned HTML
         runningTask = executor.submit(() -> {
             try {
-                String readable = readerRepo.getReadableHtml(url);
-                runOnUiThread(() ->
-                        webView.loadDataWithBaseURL(
-                                url, readable, "text/html", "UTF-8", null
-                        )
-                );
+                final String fullText = readerRepo.getReadableText(url);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    txtDetailContent.setText(fullText == null || fullText.trim().isEmpty()
+                            ? "Couldn't load full article."
+                            : fullText);
+                });
             } catch (Exception e) {
-                // fallback: if parsing fails, just load original URL in WebView
-                runOnUiThread(() -> webView.loadUrl(url));
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    txtDetailContent.setText("Couldn't load full article.");
+                });
             }
         });
+
+    }
+
+    private Element findArticleContent(Document document) {
+        // Priority list of selectors
+        String[] selectors = {
+                "article[role=main]",
+                "main article",
+                "article",
+                "[role=main]",
+                "main",
+                ".article-content",
+                ".article-body",
+                ".post-content",
+                ".entry-content",
+                ".story-body",
+                ".article-text",
+                "div[itemprop=articleBody]",
+                ".content-body",
+                "#article-body",
+                "#main-content",
+                "[class*=article-content]",
+                "[class*=post-content]"
+        };
+
+        for (String selector : selectors) {
+            Elements elements = document.select(selector);
+            if (!elements.isEmpty()) {
+                Element candidate = elements.first();
+                // Check if it has substantial content
+                if (candidate.text().length() > 200) {
+                    Log.d(TAG, "Found content with selector: " + selector);
+                    return candidate;
+                }
+            }
+        }
+
+        Log.w(TAG, "No suitable article container found");
+        return null;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (runningTask != null) runningTask.cancel(true);
+        if (runningTask != null) {
+            runningTask.cancel(true);
+        }
         executor.shutdownNow();
     }
 
     // --- helpers ---
-    private boolean isEmpty(String s) { return s == null || s.trim().isEmpty(); }
-    private String nz(String s) { return s == null ? "" : s; }
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
+    private String nz(String s) {
+        return s == null ? "" : s;
+    }
+
     private boolean containsTruncation(String s) {
         if (s == null) return false;
-        return s.matches("(?s).*\\[\\+\\d+\\s*chars\\]\\s*$") || s.matches("(?s).*\\[\\s*\\.\\.\\.\\s*\\]\\s*$");
+        return s.matches("(?s).*\\[\\+\\d+\\s*chars\\]\\s*$") ||
+                s.matches("(?s).*\\[\\s*\\.\\.\\.\\s*\\]\\s*$");
     }
+
     private String stripTruncation(String s) {
         if (s == null) return "";
         s = s.replaceAll("\\s*\\[\\+\\d+\\s*chars\\]\\s*$", "");

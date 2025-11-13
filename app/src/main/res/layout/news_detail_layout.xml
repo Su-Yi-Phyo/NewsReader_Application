@@ -67,15 +67,6 @@
                 android:focusable="true"
                 android:layout_marginEnd="16dp"/>
 
-            <!-- Read Later Button -->
-            <ImageView
-                android:id="@+id/btnDetailReadLater"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/history"
-                android:contentDescription="Read Later"
-                android:clickable="true"
-                android:focusable="true" />
 
         </LinearLayout>
 

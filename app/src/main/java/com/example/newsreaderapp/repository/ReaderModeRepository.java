@@ -4,64 +4,116 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import java.io.IOException;
 
-/**
- * Minimal “reader mode” extractor.
- * NOTE: This is a synchronous method — call it OFF the main thread.
- */
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ReaderModeRepository {
 
-    private static final int TIMEOUT_MS = 15000;
+    // Stronger headers help with anti-bot/CDN checks
     private static final String UA =
-            "Mozilla/5.0 (Android) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Mobile Safari/537.36";
+            "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119 Mobile Safari/537.36";
 
-    /** Fetches the URL and returns cleaned HTML (basic article content). */
-    public String getReadableHtml(String url) throws IOException {
+    /** Try to return *plain text* of the article (best for your TextView). */
+    public String getReadableText(String url) throws IOException {
         Document doc = Jsoup.connect(url)
                 .userAgent(UA)
-                .timeout(TIMEOUT_MS)
+                .referrer("https://www.google.com/")
+                .followRedirects(true)
+                .ignoreHttpErrors(true)
+                .timeout(12000)
+                .maxBodySize(0) // allow large pages
                 .get();
 
-        // Remove non-content noise
-        doc.select("script, style, noscript, iframe, form, header, footer, nav, aside, svg").remove();
+        // remove noise early
+        doc.select("script, style, noscript, iframe, form, header, footer, nav, aside, svg, .ad, [class*=ad-], [id*=ad-], .advert, .share, .social, .cookie, .newsletter, .comments").remove();
 
-        // Try common content containers
-        Element content = firstNonNull(
-                doc.selectFirst("article"),
-                doc.selectFirst("main"),
-                doc.selectFirst("[role=main]"),
-                doc.selectFirst("div[id*=content]"),
-                doc.selectFirst("div[class*=content]"),
-                doc.selectFirst("div[class*=article]"),
-                doc.selectFirst("section[class*=content]")
-        );
+        Element root = pickArticleRoot(url, doc);
+        if (root == null) root = doc.body();
 
-        if (content == null) {
-            // Fallback: pick the largest text block-ish div
-            content = pickLargestTextBlock(doc);
-            if (content == null) content = doc.body();
+        // prefer structured blocks
+        Elements blocks = root.select("p, h1, h2, h3, h4, li");
+        StringBuilder sb = new StringBuilder();
+        if (!blocks.isEmpty()) {
+            for (Element el : blocks) {
+                String t = el.text().trim();
+                if (t.isEmpty()) continue;
+
+                String tag = el.tagName();
+                if (tag.matches("h[1-4]")) {
+                    if (sb.length() > 0) sb.append("\n\n");
+                    sb.append(t).append("\n");
+                } else if ("li".equals(tag)) {
+                    sb.append("• ").append(t).append("\n");
+                } else { // paragraph
+                    if (t.length() < 30) continue; // skip tiny crumbs
+                    if (sb.length() > 0) sb.append("\n\n");
+                    sb.append(t);
+                }
+            }
         }
 
-        // Drop likely junk inside content
-        content.select("ul.share, .share, .social, .comment, .comments, .related, .subscribe, .cookie, .newsletter").remove();
-
-        // Build a very simple HTML doc (keeps basic tags like <p>, <img>, <h1-6>, <a>, etc.)
-        String title = doc.title() != null ? doc.title() : "";
-        String bodyInner = content.html();
-
-        return "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" +
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
-                "<title>" + escape(title) + "</title>" +
-                "<style>img{max-width:100%;height:auto;} body{font-family:sans-serif;line-height:1.6;padding:12px;} h1,h2,h3{line-height:1.25;}</style>" +
-                "</head><body>" +
-                "<h2>" + escape(title) + "</h2>" +
-                bodyInner +
-                "</body></html>";
+        if (sb.length() < 200) {
+            // fallback: dump all text from root
+            String all = root.text().trim();
+            if (!all.isEmpty()) return all;
+        }
+        return sb.toString();
     }
 
-    private Element firstNonNull(Element... els) {
-        for (Element e : els) if (e != null) return e;
+    /** Domain-specific roots first, then generic heuristics. */
+    private Element pickArticleRoot(String url, Document doc) {
+        String host = hostOf(url);
+
+        // 1) domain overrides
+        Element e = selectByDomain(host, doc);
+        if (e != null && e.text().length() > 200) return e;
+
+        // 2) generic common containers
+        String[] sels = new String[]{
+                "article[role=main]", "main article", "article",
+                "[role=main]", "main",
+                "div[itemprop=articleBody]",
+                ".article-body", ".article-content", ".entry-content",
+                ".post-content", ".story-body", ".content-body",
+                "#article-body", "#main-content", ".main-content",
+                "[class*=article-content]", "[class*=post-content]", "[id*=article-body]"
+        };
+        for (String s : sels) {
+            Element cand = doc.selectFirst(s);
+            if (cand != null && cand.text().length() > 200) return cand;
+        }
+
+        // 3) heuristic: largest text block
+        return pickLargestTextBlock(doc);
+    }
+
+    private Element selectByDomain(String host, Document doc) {
+        if (host == null) return null;
+
+        // simple map of site-specific selectors (add as you encounter sites)
+        Map<String, String[]> map = new HashMap<>();
+        map.put("www.washingtonpost.com", new String[]{
+                "article", "div[data-qa=article-body]", "div#main-content"
+        });
+        map.put("electrek.co", new String[]{
+                "article", ".entry-content", ".single-content", "main article"
+        });
+        map.put("www.theringer.com", new String[]{
+                "article", ".c-entry-content", ".article-body", "main article"
+        });
+        map.put("www.theverge.com", new String[]{
+                "article", ".c-entry-content", "main article"
+        });
+
+        String[] sels = map.get(host);
+        if (sels == null) return null;
+        for (String s : sels) {
+            Element cand = doc.selectFirst(s);
+            if (cand != null && cand.text().length() > 200) return cand;
+        }
         return null;
     }
 
@@ -70,18 +122,13 @@ public class ReaderModeRepository {
         Element best = null;
         int bestScore = -1;
         for (Element el : candidates) {
-            // crude heuristic: length of own text + number of <p> children
             int score = el.text().length() + (el.select("p").size() * 200);
-            if (score > bestScore) {
-                bestScore = score;
-                best = el;
-            }
+            if (score > bestScore) { bestScore = score; best = el; }
         }
         return best;
     }
 
-    private String escape(String s) {
-        if (s == null) return "";
-        return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+    private String hostOf(String url) {
+        try { return URI.create(url).getHost(); } catch (Exception ignored) { return null; }
     }
 }

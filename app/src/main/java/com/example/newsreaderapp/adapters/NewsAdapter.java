@@ -2,6 +2,7 @@ package com.example.newsreaderapp.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             it.putExtra("url", a.getUrl());
             ctx.startActivity(it);
         });
+
+        //xu ly btn like click
+        h.btnLike.setOnClickListener(v -> {
+
+        });
+
+        h.btnSave.setOnClickListener(v -> {
+
+        });
+
     }
 
     @Override
@@ -76,6 +87,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     static class NewsViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtDesc, txtTime;
         ImageView img;
+        ImageView btnSave, btnLike;
 
         NewsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,6 +95,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             txtDesc  = itemView.findViewById(R.id.txtNewsDescription);
             txtTime  = itemView.findViewById(R.id.txtNewsTime);
             img      = itemView.findViewById(R.id.imgNews);
+            btnLike = itemView.findViewById(R.id.btnDetailLike);
+            btnSave = itemView.findViewById(R.id.btnDetailBookmark);
         }
     }
 
