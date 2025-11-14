@@ -70,22 +70,22 @@
                 android:id="@+id/btnLike"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/heart"
+                android:src="@drawable/like"
                 android:contentDescription="Like"
                 android:clickable="true"
                 android:focusable="true"
                 android:layout_marginEnd="16dp"/>
 
-            <!-- Bookmark Button -->
-            <ImageView
-                android:id="@+id/btnBookmark"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/bookmark"
-                android:contentDescription="Bookmark"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_marginEnd="16dp"/>
+<!--            &lt;!&ndash; Bookmark Button &ndash;&gt;-->
+<!--            <ImageView-->
+<!--                android:id="@+id/btnBookmark"-->
+<!--                android:layout_width="24dp"-->
+<!--                android:layout_height="24dp"-->
+<!--                android:src="@drawable/save"-->
+<!--                android:contentDescription="Bookmark"-->
+<!--                android:clickable="true"-->
+<!--                android:focusable="true"-->
+<!--                android:layout_marginEnd="16dp"/>-->
 
             <!-- Read Later Button -->
             <ImageView

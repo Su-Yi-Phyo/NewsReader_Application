@@ -197,7 +197,7 @@ public class HomePageFragment extends Fragment {
         UserViewModel.Factory factory = new UserViewModel.Factory(requireActivity().getApplication(), repo, userId);
         userViewModel = new ViewModelProvider(this, factory).get(UserViewModel.class);
 
-        loadSavedArticles(userId);
+//        loadSavedArticles(userId);
         loadLikedArticles();
 
         adapter.setOnArticleActionListener(new ArticlesAdapter.OnArticleActionListener() {
@@ -213,11 +213,11 @@ public class HomePageFragment extends Fragment {
                 startActivity(it);
             }
 
-            @Override
-            public void onSaveClick(Article article) {
-                Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show();
-                userViewModel.saveArticle(userId, article);
-            }
+//            @Override
+//            public void onSaveClick(Article article) {
+//                Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show();
+//                userViewModel.saveArticle(userId, article);
+//            }
 
             @Override
             public void onLikeClick(Article article) {
@@ -307,20 +307,20 @@ public class HomePageFragment extends Fragment {
             default:              return null;
         }
     }
-    // 🔹 Load savedArticles từ Room và set trạng thái nút
-    private void loadSavedArticles(String userId) {
-        new Thread(() -> {
-            UserEntity user = AppDatabase.getInstance(requireContext())
-                    .userDao()
-                    .getUserById(userId); // phương thức lấy user hiện tại
-            if (user != null) {
-                List<Article> saved = user.getSavedArticles();
-                requireActivity().runOnUiThread(() -> adapter.setSavedArticles(saved));
-            }
-        }).start();
-    }
+//    //  Load savedArticles từ Room và set trạng thái nút
+//    private void loadSavedArticles(String userId) {
+//        new Thread(() -> {
+//            UserEntity user = AppDatabase.getInstance(requireContext())
+//                    .userDao()
+//                    .getUserById(userId); // phương thức lấy user hiện tại
+//            if (user != null) {
+//                List<Article> saved = user.getSavedArticles();
+//                requireActivity().runOnUiThread(() -> adapter.setSavedArticles(saved));
+//            }
+//        }).start();
+//    }
 
-    // 🔹 Load likedArticles từ Firestore và set trạng thái nút
+    //  Load likedArticles từ Firestore và set trạng thái nút
     private void loadLikedArticles() {
         if (userId == null) return;
 

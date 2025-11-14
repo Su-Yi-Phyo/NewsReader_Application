@@ -108,9 +108,9 @@ public class BookmarksFragment extends Fragment {
                 startActivity(it);
             }
 
-            @Override
-            public void onSaveClick(Article a) {
-            }  // Không dùng
+//            @Override
+//            public void onSaveClick(Article a) {
+//            }  // Không dùng
 
             @Override
             public void onLikeClick(Article a) {

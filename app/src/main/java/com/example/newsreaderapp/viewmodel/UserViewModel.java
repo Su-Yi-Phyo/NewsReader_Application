@@ -45,7 +45,6 @@ public class UserViewModel extends AndroidViewModel {
                 FirebaseFirestore.getInstance()
         );
     }
-
     public UserViewModel(@NonNull Application app, UserRepository repo, String userId) {
         super(app);
         this.repo = repo;

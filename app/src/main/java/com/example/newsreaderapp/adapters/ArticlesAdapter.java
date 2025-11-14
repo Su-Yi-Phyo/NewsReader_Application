@@ -37,7 +37,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
 
     public interface OnArticleActionListener {
         void onArticleClick(Article article);
-        void onSaveClick(Article article);
+//        void onSaveClick(Article article);
         void onLikeClick(Article article);
         void onRemoveClick(Article article);
     }
@@ -84,12 +84,12 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
         // 🔹 Cấu hình nút theo chế độ
         switch (mode) {
             case HOME:
-                h.btnSave.setVisibility(View.VISIBLE);
+//                h.btnSave.setVisibility(View.VISIBLE);
                 h.btnLike.setVisibility(View.VISIBLE);
                 h.btnUnsave.setVisibility(View.GONE);
                 break;
             case BOOKMARKS:
-                h.btnSave.setVisibility(View.GONE);
+//                h.btnSave.setVisibility(View.GONE);
                 h.btnLike.setVisibility(View.GONE);
                 h.btnUnsave.setVisibility(View.VISIBLE);
                 h.btnUnsave.setOnClickListener(v -> {
@@ -97,7 +97,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
                 });
                 break;
             case LIKED:
-                h.btnSave.setVisibility(View.GONE);
+//                h.btnSave.setVisibility(View.GONE);
                 h.btnLike.setVisibility(View.GONE);
                 h.btnUnsave.setVisibility(View.VISIBLE);
                 h.btnUnsave.setOnClickListener(v -> {
@@ -107,24 +107,24 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
         }
 
         if (mode == Mode.HOME) {
-            // Cập nhật màu nút theo trạng thái
-            if (savedUrls.contains(a.getUrl())) {
-                h.btnSave.setColorFilter(Color.parseColor("#FF9800")); // ví dụ cam cho saved
-            } else {
-                h.btnSave.setColorFilter(Color.parseColor("#AAAAAA")); // mặc định xám
-            }
+//            // Cập nhật màu nút theo trạng thái
+//            if (savedUrls.contains(a.getUrl())) {
+//                h.btnSave.setImageResource(R.drawable.saved);
+//            } else {
+//                h.btnSave.setImageResource(R.drawable.save);
+//            }
 
             if (likedUrls.contains(a.getUrl())) {
-                h.btnLike.setColorFilter(Color.parseColor("#F44336")); // đỏ cho liked
+                h.btnLike.setImageResource(R.drawable.liked);
             } else {
-                h.btnLike.setColorFilter(Color.parseColor("#AAAAAA"));
+                h.btnLike.setImageResource(R.drawable.like);
             }
 
-            h.btnSave.setOnClickListener(v -> {
-                if (listener != null) listener.onSaveClick(a);
-                savedUrls.add(a.getUrl()); // cập nhật local
-                notifyItemChanged(position);
-            });
+//            h.btnSave.setOnClickListener(v -> {
+//                if (listener != null) listener.onSaveClick(a);
+//                savedUrls.add(a.getUrl()); // cập nhật local
+//                notifyItemChanged(position);
+//            });
             h.btnLike.setOnClickListener(v -> {
                 if (listener != null) listener.onLikeClick(a);
                 likedUrls.add(a.getUrl());
@@ -150,7 +150,7 @@ public class ArticlesAdapter extends RecyclerView.Adapter<ArticlesAdapter.NewsVi
             img      = itemView.findViewById(R.id.imgNews);
             btnUnsave  = itemView.findViewById(R.id.btnDelete);
             btnLike  = itemView.findViewById(R.id.btnLike);
-            btnSave  = itemView.findViewById(R.id.btnBookmark);
+//            btnSave  = itemView.findViewById(R.id.btnBookmark);
         }
     }
     public void setLikedArticles(List<Article> likedArticles) {

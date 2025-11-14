@@ -50,7 +50,7 @@
                 android:id="@+id/btnDetailLike"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/heart"
+                android:src="@drawable/like"
                 android:contentDescription="Like"
                 android:clickable="true"
                 android:focusable="true"
@@ -61,7 +61,7 @@
                 android:id="@+id/btnDetailBookmark"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/bookmark"
+                android:src="@drawable/save"
                 android:contentDescription="Bookmark"
                 android:clickable="true"
                 android:focusable="true"
@@ -140,22 +140,22 @@
                     android:textSize="12sp"
                     android:textColor="#999999"/>
 
-                <!-- Like Icon -->
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/heart"
-                    android:contentDescription="Likes"
-                    app:tint="#FF5252"
-                    android:layout_marginEnd="4dp"/>
+<!--                &lt;!&ndash; Like Icon &ndash;&gt;-->
+<!--                <ImageView-->
+<!--                    android:layout_width="18dp"-->
+<!--                    android:layout_height="18dp"-->
+<!--                    android:src="@drawable/heart"-->
+<!--                    android:contentDescription="Likes"-->
+<!--                    app:tint="#FF5252"-->
+<!--                    android:layout_marginEnd="4dp"/>-->
 
-                <!-- Like Count -->
-                <TextView
-                    android:id="@+id/txtDetailLikeCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="#FF5252"/>
+<!--                &lt;!&ndash; Like Count &ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:id="@+id/txtDetailLikeCount"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:textSize="12sp"-->
+<!--                    android:textColor="#FF5252"/>-->
 
             </LinearLayout>
 

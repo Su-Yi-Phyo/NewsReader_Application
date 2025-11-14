@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.newsreaderapp.R;
 import com.example.newsreaderapp.adapters.ArticlesAdapter;
-import com.example.newsreaderapp.adapters.NewsAdapter;
 import com.example.newsreaderapp.database.AppDatabase;
 import com.example.newsreaderapp.helper.Converters;
 import com.example.newsreaderapp.models.Article;
@@ -89,7 +88,12 @@ public class LikedNewsFragment extends Fragment {
 
                     if (snapshot != null && snapshot.exists()) {
                         Object rawLiked = snapshot.get("likedArticles");
-                        List<Article> likedArticles = Converters.toArticleList(new Gson().toJson(rawLiked));
+                        List<Article> likedArticles = new ArrayList<>();
+
+                        if (rawLiked != null) {
+                            likedArticles = Converters.toArticleList(new Gson().toJson(rawLiked));
+                            if (likedArticles == null) likedArticles = new ArrayList<>();
+                        }
 
                         if (likedArticles.isEmpty()) {
                             tvEmpty.setVisibility(View.VISIBLE);
@@ -119,8 +123,8 @@ public class LikedNewsFragment extends Fragment {
                 startActivity(it);
             }
 
-            @Override
-            public void onSaveClick(Article a) {}  // Không dùng
+//            @Override
+//            public void onSaveClick(Article a) {}  // Không dùng
             @Override
             public void onLikeClick(Article a) {}  // Không dùng
             @Override
