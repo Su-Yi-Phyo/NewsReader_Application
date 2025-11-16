@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        // 1) Bật Edge-to-Edge
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         View root = findViewById(R.id.main);
@@ -76,9 +75,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Mặc định mở tab "Tin tức"
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frame_container, new HomePageFragment())
-                .commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame_container, new HomePageFragment())
+                    .commit();
+        }
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selected = null;
