@@ -48,7 +48,7 @@ public class LikedNewsFragment extends Fragment {
         // Toolbar
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle("Liked Articles");
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitleTextColor(Color.LTGRAY);
         toolbar.inflateMenu(R.menu.remove_all_menu);
 
         toolbar.setOnMenuItemClickListener(item -> {

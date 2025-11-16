@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.newsreaderapp.R;
 import com.example.newsreaderapp.activities.LoginActivity;
+import com.example.newsreaderapp.activities.NewsDetailActivity;
 import com.example.newsreaderapp.adapters.ArticlesAdapter;
 import com.example.newsreaderapp.database.AppDatabase;
 import com.example.newsreaderapp.models.Article;
@@ -65,7 +66,7 @@ public class BookmarksFragment extends Fragment {
         // Toolbar riêng cho fragment
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle("Bookmarks");
-        toolbar.setTitleTextColor(Color.WHITE);
+        toolbar.setTitleTextColor(Color.LTGRAY);
         toolbar.inflateMenu(R.menu.remove_all_menu);
 
         // Bắt sự kiện nhấn menu
@@ -98,7 +99,7 @@ public class BookmarksFragment extends Fragment {
         adapter.setOnArticleActionListener(new ArticlesAdapter.OnArticleActionListener() {
             @Override
             public void onArticleClick(Article a) {
-                Intent it = new Intent(getContext(), com.example.newsreaderapp.activities.NewsDetailActivity.class);
+                Intent it = new Intent(getContext(), NewsDetailActivity.class);
                 it.putExtra("title", a.getTitle());
                 it.putExtra("description", a.getDescription());
                 it.putExtra("content", a.getContent());
