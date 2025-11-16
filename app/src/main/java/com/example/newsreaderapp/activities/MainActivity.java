@@ -3,12 +3,14 @@ package com.example.newsreaderapp.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -45,13 +47,16 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-//        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestEmail()
-//                .build();
-//
-//        googleSignInClient = GoogleSignIn.getClient(this, gso);
-//
-//        GoogleSignInAccount acc = GoogleSignIn.getLastSignedInAccount(this);
+        // 1) Bật Edge-to-Edge
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        View root = findViewById(R.id.main);
+        View bottomNav = findViewById(R.id.bottom_nav);
+
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, insets) -> {
+            // Không cho BottomNavigationView nhận padding theo navigation bar
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         bottomNavigationView = findViewById(R.id.bottom_nav);
 
