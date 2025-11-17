@@ -31,7 +31,10 @@
             android:screenOrientation="portrait"
             android:exported="false">
         </activity>
-        <activity android:name=".activities.NewsDetailActivity" />
+        <activity android:name=".activities.NewsDetailActivity"
+            android:screenOrientation="portrait"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
