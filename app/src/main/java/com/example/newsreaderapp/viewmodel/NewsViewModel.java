@@ -18,6 +18,7 @@ import retrofit2.Response;
 
 public class NewsViewModel extends ViewModel {
 
+    //variable declaration
     private static final String API_KEY = "bbf35dae0783409e93ac4460209b2259";
 
     private final MutableLiveData<List<Article>> _articles = new MutableLiveData<>(new ArrayList<>());

@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-
-
 public class UserRepository {
     private final UserDao userDao; // Room DAO
     private final ExecutorService executor;
@@ -41,14 +39,14 @@ public class UserRepository {
     }
 
     public LiveData<UserEntity> getCurrentUser() {
-        return currentUser;  // Trả về LiveData để UI observe
+        return currentUser;  // return LiveData to UI observe
     }
-    // LiveData user để Activity/ViewModel observe
+    // LiveData user to Activity/ViewModel observe
     public LiveData<UserEntity> getUser(String userId) {
-        // Fetch dữ liệu từ Room ban đầu
+        // Fetch data from Room
         LiveData<UserEntity> liveData = userDao.getUserLiveData(userId);
 
-        // Đồng bộ Firestore khi online
+        // synchronize Firestore when online
         firestore.collection("users").document(userId).get()
                 .addOnSuccessListener(doc -> {
                     UserEntity user = doc.toObject(UserEntity.class);
@@ -59,7 +57,7 @@ public class UserRepository {
 
         return liveData;
     }
-    // Lưu user (register hoặc cập nhật profile)
+    // save user (register or update profile)
     public void saveUser(UserEntity user) {
         new Thread(() -> userDao.insertOrUpdate(user)).start();
         firestore.collection("users").document(user.getId()).set(user);
@@ -77,7 +75,7 @@ public class UserRepository {
                 });
     }
 
-    // Save bài offline + Firestore để multi-device
+    // Save news offline + Firestore for multi-device
     public void saveArticle(String userId, Article article) {
         // Room
         new Thread(() -> {
@@ -141,7 +139,7 @@ public class UserRepository {
                 .update("likedArticles", FieldValue.arrayRemove(article));
     }
 
-    // Lấy danh sách liked bài (online)
+    //get list liked news (online)
     public void fetchLikedArticles(String userId, OnCompleteListener<List<Article>> listener) {
         firestore.collection("users").document(userId).get()
                 .addOnSuccessListener(doc -> {

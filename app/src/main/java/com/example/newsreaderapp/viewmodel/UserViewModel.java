@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class UserViewModel extends AndroidViewModel {
+    //variable declaration
     public final UserRepository repo;
     private MutableLiveData<UserEntity> currentUser = new MutableLiveData<>();
 
@@ -112,7 +113,7 @@ public class UserViewModel extends AndroidViewModel {
 
   }
 
-    // khi user login vào Firebase → load vào Room hoặc tạo mới
+    // user log in to firebase → load into Room or create new
     public void loadOrCreateUser(FirebaseUser fUser) {
         Executors.newSingleThreadExecutor().execute(() -> {
             UserEntity user = repo.getUserByEmail(fUser.getEmail());
@@ -132,7 +133,7 @@ public class UserViewModel extends AndroidViewModel {
         });
     }
 
-    // lúc REGISTER email → tạo UserEntity đầy đủ (có password)
+    // from REGISTER email → create UserEntity (có password)
     public void createUserIfNotExists(FirebaseUser fUser, String password) {
         Executors.newSingleThreadExecutor().execute(() -> {
             UserEntity user = new UserEntity(

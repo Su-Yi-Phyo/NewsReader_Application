@@ -159,6 +159,7 @@ import java.util.Map;
 
 public class HomePageFragment extends Fragment {
 
+    //variable declaration
     private RecyclerView recyclerView;
     private ArticlesAdapter adapter;
     private NewsViewModel vm;
@@ -186,12 +187,12 @@ public class HomePageFragment extends Fragment {
 
         adapter = new ArticlesAdapter(ArticlesAdapter.Mode.HOME);
         recyclerView.setAdapter(adapter);
-        // Lấy userId từ SharedPreferences
+        // Get userId from SharedPreferences
         SharedPreferences prefs = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userId = prefs.getString("user_id", null);
 
         vm = new ViewModelProvider(this).get(NewsViewModel.class);
-        // Khởi tạo ViewModel
+        // Create ViewModel
         AppDatabase db = AppDatabase.getInstance(requireContext());
         UserRepository repo= new UserRepository(db.userDao(), FirebaseFirestore.getInstance());
         UserViewModel.Factory factory = new UserViewModel.Factory(requireActivity().getApplication(), repo, userId);
@@ -227,7 +228,7 @@ public class HomePageFragment extends Fragment {
 
             @Override
             public void onRemoveClick(Article article) {
-                // không dùng trong HOME mode
+                // not in HOME mode
             }
         });
 
@@ -263,7 +264,11 @@ public class HomePageFragment extends Fragment {
 
         vm.error.observe(getViewLifecycleOwner(), err -> {
             if (err != null && isAdded()) {
-                Toast.makeText(requireContext(), err, Toast.LENGTH_SHORT).show();
+                Toast.makeText(
+                        requireContext(),
+                        "No internet connection. Please retry connecting internet.",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
     }
@@ -320,7 +325,7 @@ public class HomePageFragment extends Fragment {
 //        }).start();
 //    }
 
-    //  Load likedArticles từ Firestore và set trạng thái nút
+    //  Load likedArticles from Firestore and set state node
     private void loadLikedArticles() {
         if (userId == null) return;
 
